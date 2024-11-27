@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:http/http.dart' as http;
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -13,8 +15,7 @@ class CounterBloc extends Bloc<CounterEvent, CounterState> {
     try {
       final response =
           await http.get(Uri.parse("http://localhost:3000/increment"));
-      print(response);
-      // TODO: Parse response and emit state else emit error
+      emit(CounterState(jsonDecode(response.body)));
     } catch (e) {
       print(e);
     }
