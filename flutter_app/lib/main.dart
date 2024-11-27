@@ -1,7 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+import 'counter_bloc/bloc.dart';
 
 void main() {
-  runApp(const MainApp());
+  runApp(
+    BlocProvider(
+      create: (context) => CounterBloc(),
+      child: const MainApp(),
+    ),
+  );
 }
 
 class MainApp extends StatelessWidget {
@@ -9,10 +17,20 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
       home: Scaffold(
         body: Center(
-          child: Text('Hello World!'),
+          child: BlocBuilder<CounterBloc, CounterState>(
+            builder: (context, state) {
+              return Text(state.value.toString());
+            },
+          ),
+        ),
+        floatingActionButton: FloatingActionButton(
+          child: const Icon(Icons.add),
+          onPressed: () {
+            context.read<CounterBloc>().add(IncrementCount());
+          },
         ),
       ),
     );
