@@ -14,7 +14,7 @@ class CounterBloc extends Bloc<CounterEvent, CounterState> {
   void _incrementCount(IncrementCount event, Emitter<CounterState> emit) async {
     try {
       final response =
-          await http.get(Uri.parse("http://localhost:3000/increment"));
+          await http.get(Uri.parse("${Uri.base.origin}/api/increment"));
       emit(CounterState(jsonDecode(response.body)));
     } catch (e) {
       print(e);
