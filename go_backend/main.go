@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"net/http"
 	"os"
 
 	"github.com/gin-gonic/gin"
@@ -17,28 +18,18 @@ func main() {
 	globalCount := GloblaCount{}
 
 	router := gin.Default()
-	router.Use(cors())
-	router.GET("/increment", func(c *gin.Context) {
+
+	router.GET("/api/increment", func(c *gin.Context) {
 		globalCount.mu.Lock()
 		defer globalCount.mu.Unlock()
 		globalCount.value++
 		c.JSON(200, globalCount.value)
 	})
+
+	router.StaticFS("./public", http.Dir(""))
+	router.NoRoute(func(c *gin.Context) {
+		c.File("./public/index.html")
+	})
 	log.Printf("Server started on port: %v\n", port)
 	log.Fatal(router.Run(address))
-}
-
-func cors() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
-		c.Writer.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE")
-		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
-
-		if c.Request.Method == "OPTIONS" {
-			c.AbortWithStatus(204)
-			return
-		}
-
-		c.Next()
-	}
 }
